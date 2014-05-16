@@ -33,6 +33,7 @@
 #ifndef __vtkDepthSortDefaultPainter_h__
 #define __vtkDepthSortDefaultPainter_h__
 
+#include "pv_cuda_piston_configure.h" // For export macro
 #include "vtkDefaultPainter.h"
 
 class vtkDepthSortPainter;
@@ -40,7 +41,7 @@ class vtkTwoScalarsToColorsPainter;
 class vtkDepthSortPolygonsPainter;
 class vtkPistonPolygonsPainter;
 
-class VTK_EXPORT vtkDepthSortDefaultPainter : public vtkDefaultPainter
+class pv_cuda_piston_EXPORT vtkDepthSortDefaultPainter : public vtkDefaultPainter
 {
 public :
   static vtkDepthSortDefaultPainter* New();
@@ -68,7 +69,7 @@ public :
   void SetDepthSortPolygonsPainter(vtkDepthSortPolygonsPainter*);
   vtkGetObjectMacro(DepthSortPolygonsPainter, vtkDepthSortPolygonsPainter);
 
-#ifdef PV_ZOLTAN_USE_PISTON
+#ifdef PV_CUDA_PISTON_USE_PISTON
   // Description:
   // Get/Set the PistonPolygonsPainter. 
   // The PistonPolygonsPainter is a primitive painter which paints
@@ -95,7 +96,7 @@ protected:
   vtkDepthSortPainter          *DepthSortPainter;
   vtkTwoScalarsToColorsPainter *TwoScalarsToColorsPainter;
   vtkDepthSortPolygonsPainter  *DepthSortPolygonsPainter;
-#ifdef PV_ZOLTAN_USE_PISTON
+#ifdef PV_CUDA_PISTON_USE_PISTON
   vtkPistonPolygonsPainter     *PistonPolygonsPainter;
 #endif
   int EnablePiston;

@@ -33,12 +33,12 @@
 #ifndef __vtkPistonAlgorithm_h
 #define __vtkPistonAlgorithm_h
 
-#include "vtkAcceleratorsPistonModule.h" // For export macro
+#include "pv_cuda_piston_configure.h" // For export macro
 #include "vtkAlgorithm.h"
 
 class vtkPistonDataObject;
 
-class VTKACCELERATORSPISTON_EXPORT vtkPistonAlgorithm : public vtkAlgorithm
+class pv_cuda_piston_EXPORT vtkPistonAlgorithm : public vtkAlgorithm
 {
 public:
   static vtkPistonAlgorithm *New();

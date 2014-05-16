@@ -28,7 +28,7 @@
 
 class vtkDataSet;
 
-class VTKACCELERATORSPISTON_EXPORT vtkDataSetToPiston : public vtkPistonAlgorithm
+class pv_cuda_piston_EXPORT vtkDataSetToPiston : public vtkPistonAlgorithm
 {
 public:
   static vtkDataSetToPiston *New();

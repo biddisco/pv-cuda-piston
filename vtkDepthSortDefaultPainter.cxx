@@ -40,7 +40,7 @@
 #include "vtkScalarsToColorsPainter.h"
 #include "vtkTwoScalarsToColorsPainter.h"
 #include "vtkDepthSortPolygonsPainter.h"
-#ifdef PV_ZOLTAN_USE_PISTON
+#ifdef PV_CUDA_PISTON_USE_PISTON
  #include "vtkPistonPolygonsPainter.h"
 #endif
 //----------------------------------------------------------------------------
@@ -49,7 +49,7 @@ vtkStandardNewMacro(vtkDepthSortDefaultPainter)
 vtkCxxSetObjectMacro(vtkDepthSortDefaultPainter, DepthSortPainter,          vtkDepthSortPainter)
 vtkCxxSetObjectMacro(vtkDepthSortDefaultPainter, TwoScalarsToColorsPainter, vtkTwoScalarsToColorsPainter)
 vtkCxxSetObjectMacro(vtkDepthSortDefaultPainter, DepthSortPolygonsPainter,  vtkDepthSortPolygonsPainter)
-#ifdef PV_ZOLTAN_USE_PISTON
+#ifdef PV_CUDA_PISTON_USE_PISTON
  #include "vtkPistonPolygonsPainter.h"
  vtkCxxSetObjectMacro(vtkDepthSortDefaultPainter, PistonPolygonsPainter,     vtkPistonPolygonsPainter)
 #endif
@@ -59,7 +59,7 @@ vtkDepthSortDefaultPainter::vtkDepthSortDefaultPainter()
   this->DepthSortPainter          = vtkDepthSortPainter::New();
   this->TwoScalarsToColorsPainter = vtkTwoScalarsToColorsPainter::New();
   this->DepthSortPolygonsPainter  = vtkDepthSortPolygonsPainter::New();
-#ifdef PV_ZOLTAN_USE_PISTON
+#ifdef PV_CUDA_PISTON_USE_PISTON
   this->PistonPolygonsPainter     = vtkPistonPolygonsPainter::New();
   this->EnablePiston = false;
 #endif
@@ -71,7 +71,7 @@ vtkDepthSortDefaultPainter::~vtkDepthSortDefaultPainter()
   this->SetDepthSortPainter(NULL);
   this->SetTwoScalarsToColorsPainter(NULL);
   this->SetDepthSortPolygonsPainter(NULL);
-#ifdef PV_ZOLTAN_USE_PISTON
+#ifdef PV_CUDA_PISTON_USE_PISTON
   this->SetPistonPolygonsPainter(NULL);
 #endif
 }
@@ -89,7 +89,7 @@ void vtkDepthSortDefaultPainter::BuildPainterChain()
   // build the superclass painter chain
   this->Superclass::BuildPainterChain();
 
-#ifdef PV_ZOLTAN_USE_PISTON
+#ifdef PV_CUDA_PISTON_USE_PISTON
   if (this->EnablePiston ) {
     vtkChooserPainter *chooserPainter = vtkChooserPainter::SafeDownCast(this->GetDelegatePainter());
     if (chooserPainter) {
@@ -106,7 +106,7 @@ void vtkDepthSortDefaultPainter::BuildPainterChain()
     if (chooserPainter) {
       chooserPainter->SetPolyPainter(this->DepthSortPolygonsPainter);
     }
-#ifdef PV_ZOLTAN_USE_PISTON
+#ifdef PV_CUDA_PISTON_USE_PISTON
   }
 #endif
 }

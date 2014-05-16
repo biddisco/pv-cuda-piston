@@ -28,7 +28,7 @@
 #ifndef __vtkPistonDataObject_h
 #define __vtkPistonDataObject_h
 
-#include "vtkAcceleratorsPistonModule.h" // For export macro
+#include "pv_cuda_piston_configure.h" // For export macro
 #include "vtkDataObject.h"
 
 class vtkInformation;
@@ -36,7 +36,7 @@ class vtkInformationVector;
 class vtkPistonReference;
 class vtkTimeStamp;
 
-class VTKACCELERATORSPISTON_EXPORT vtkPistonDataObject : public vtkDataObject
+class pv_cuda_piston_EXPORT vtkPistonDataObject : public vtkDataObject
 {
 public:
   static vtkPistonDataObject* New();

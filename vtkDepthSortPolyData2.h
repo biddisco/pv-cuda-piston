@@ -28,11 +28,12 @@
 #ifndef __vtkDepthSortPolyData2_h
 #define __vtkDepthSortPolyData2_h
 
+#include "pv_cuda_piston_configure.h" // For export macro
 #include "vtkDepthSortPolyData.h"
 #include "vtkSmartPointer.h"
 class vtkIdTypeArray;
 
-class VTK_EXPORT vtkDepthSortPolyData2 : public vtkDepthSortPolyData
+class pv_cuda_piston_EXPORT vtkDepthSortPolyData2 : public vtkDepthSortPolyData
 {
 public:
   // Description:

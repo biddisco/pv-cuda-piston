@@ -36,7 +36,7 @@
 #ifndef __vtkDepthSortPainter_h
 #define __vtkDepthSortPainter_h
 
-
+#include "pv_cuda_piston_configure.h" // For export macro
 #include "vtkPainter.h"
 #include "vtkSmartPointer.h"      // Needed
 #include "vtkWeakPointer.h"       // Needed
@@ -52,7 +52,7 @@ class vtkTexture;
 class vtkDepthSortPolyData2;
 class vtkUnsignedCharArray;
 
-class VTK_EXPORT vtkDepthSortPainter : public vtkPainter
+class pv_cuda_piston_EXPORT vtkDepthSortPainter : public vtkPainter
 {
 public:
   vtkTypeMacro(vtkDepthSortPainter, vtkPainter);

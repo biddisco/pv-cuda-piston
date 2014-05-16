@@ -33,7 +33,7 @@ class vtkActor;
 #define VTK_DIRECTION_BACK_TO_FRONT 0
 #define VTK_DIRECTION_FRONT_TO_BACK 1
 
-class VTK_EXPORT vtkPistonPolygonsPainter : public vtkPolygonsPainter
+class pv_cuda_piston_EXPORT vtkPistonPolygonsPainter : public vtkPolygonsPainter
 {
 public:
   static vtkPistonPolygonsPainter* New();

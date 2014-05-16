@@ -20,6 +20,7 @@
 #ifndef __vtkDepthSortPolygonsPainter_h
 #define __vtkDepthSortPolygonsPainter_h
 
+#include "pv_cuda_piston_configure.h" // For export macro
 #include "vtkPolygonsPainter.h"
 #include "vtkSmartPointer.h"
 #include "vtkTwoScalarsToColorsPainter.h"
@@ -28,7 +29,7 @@ class vtkPistonMapper;
 class vtkCamera;
 class vtkActor;
 
-class VTK_EXPORT vtkDepthSortPolygonsPainter : public vtkPolygonsPainter
+class pv_cuda_piston_EXPORT vtkDepthSortPolygonsPainter : public vtkPolygonsPainter
 {
 public:
   static vtkDepthSortPolygonsPainter* New();

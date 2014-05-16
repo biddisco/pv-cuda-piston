@@ -20,6 +20,7 @@
 #ifndef __vtkDepthSortRepresentation_h
 #define __vtkDepthSortRepresentation_h
 
+#include "pv_cuda_piston_configure.h" // For export macro
 #include "vtkGeometryRepresentation.h"
 #include "vtkSmartPointer.h"
 
@@ -31,7 +32,7 @@ class vtkMultiProcessController;
 class vtkBoundsExtentTranslator;
 class vtkPistonPolygonsPainter;
 
-class VTK_EXPORT vtkDepthSortRepresentation : public vtkGeometryRepresentation
+class pv_cuda_piston_EXPORT vtkDepthSortRepresentation : public vtkGeometryRepresentation
 {
 public:
   static vtkDepthSortRepresentation* New();
@@ -90,7 +91,7 @@ protected:
   vtkSmartPointer<vtkDepthSortPolygonsPainter>  DepthSortPolygonsPainter;
   vtkSmartPointer<vtkTwoScalarsToColorsPainter> TwoScalarsToColorsPainter;
   vtkSmartPointer<vtkBoundsExtentTranslator>    BoundsTranslator;
-#ifdef PV_ZOLTAN_USE_PISTON
+#ifdef PV_CUDA_PISTON_USE_PISTON
   vtkSmartPointer<vtkPistonPolygonsPainter>     PistonPolygonsPainter;
 #endif
  
