@@ -125,6 +125,10 @@ endif()
 
 add_definitions(-DPV_CUDA_PISTON_USE_PISTON)
 
+# the dll export flag added by cmake is not passed to NVCC, so
+# we will add it manually here
+add_definitions(-Dpv_cuda_piston_EXPORTS)
+
 include_directories(
   ${PISTON_INCLUDE}
   ${CMAKE_CURRENT_SOURCE_DIR}/piston

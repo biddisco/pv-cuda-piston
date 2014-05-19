@@ -33,8 +33,6 @@ namespace vtkpiston {
 
 //  typedef thrust::tuple<unsigned char, unsigned char, unsigned char, unsigned char> uchar4;
 
-void DeleteData(vtkPistonReference *);
-
 typedef struct
 {
   //GPU side representation of a vtkPolyData

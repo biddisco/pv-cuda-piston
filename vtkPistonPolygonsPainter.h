@@ -24,6 +24,7 @@
 #include "vtkSmartPointer.h"
 #include "vtkDataSetToPiston.h"
 #include "vtkTwoScalarsToColorsPainter.h"
+#include "vtkCUDAPiston.h"
 
 class vtkRenderWindow;
 class vtkCamera;

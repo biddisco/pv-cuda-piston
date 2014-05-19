@@ -14,7 +14,6 @@
 =========================================================================*/
 #include "vtkPistonPolygonsPainter.h"
 
-#include "vtkgl.h"
 #include "vtkOpenGLExtensionManager.h"
 #include "vtkProperty.h"
 #include "vtkRenderer.h"
@@ -41,28 +40,11 @@
 //-----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkPistonPolygonsPainter);
 //-----------------------------------------------------------------------------
-struct  cudaGraphicsResource; //keeps vtkpiston namespace decl from claiming it
 #define NUM_INTEROP_BUFFERS 4
 bool vtkPistonPolygonsPainter::CudaGLInitted = false;
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
 //-----------------------------------------------------------------------------
-namespace vtkpiston {
-  // Forward declarations of methods defined in the cuda implementation
-  int  GetCudaDeviceCount();
-  void CudaGLInit(int device);
-  int  QueryNumVerts(vtkPistonDataObject *id);
-  int  QueryVertsPer(vtkPistonDataObject *id);
-  int  QueryNumCells(vtkPistonDataObject *id);
-  void CudaRegisterBuffer(struct cudaGraphicsResource **vboResource, GLuint vboBuffer);
-  void CudaTransferToGL(vtkPistonDataObject *id, unsigned long dataObjectMTimeCache,
-       struct cudaGraphicsResource **vboResources, 
-       unsigned char *colorptr, double scalarrange[2], 
-       double alpha, bool &hasNormals, bool &hasColors, bool &useindexbuffers);
-  bool AlmostEqualRelativeAndAbs(float A, float B, float maxDiff, float maxRelDiff);
-  //
-  void DepthSortPolygons(vtkPistonDataObject *id, double *cameravec, int direction);
-}
 //-----------------------------------------------------------------------------
 class vtkPistonPolygonsPainter::InternalInfo {
 public:

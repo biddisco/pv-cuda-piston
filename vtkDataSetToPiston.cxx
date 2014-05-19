@@ -23,13 +23,7 @@
 #include "vtkPointData.h"
 #include "vtkPolyData.h"
 #include "vtkPistonDataObject.h"
-
-//----------------------------------------------------------------------------
-namespace vtkpiston {
-  //forward declarations of methods defined in the cuda implementation
-  void CopyToGPU(vtkImageData *id, vtkPistonDataObject *od);
-  void CopyToGPU(vtkPolyData *id, vtkPistonDataObject *od, bool useindexbuffer, char *scalarname, char *opacityname);
-}
+#include "vtkCUDAPiston.h"
 
 //----------------------------------------------------------------------------
 vtkStandardNewMacro(vtkDataSetToPiston);

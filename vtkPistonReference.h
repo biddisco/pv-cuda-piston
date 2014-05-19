@@ -28,10 +28,7 @@
 #ifndef VTKPistonReference_H_
 #define VTKPistonReference_H_
 
-namespace vtkpiston {
-  void DeleteData(vtkPistonReference *tr);
-  void DeepCopy(vtkPistonReference *self, vtkPistonReference *other);
-}
+#include "vtkCUDAPiston.h"
 
 class vtkPistonReference {
 public:
