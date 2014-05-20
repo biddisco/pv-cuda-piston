@@ -101,69 +101,6 @@ void vtkPistonPolygonsPainter::SetScalarsToColors(vtkTwoScalarsToColorsPainter *
   this->ScalarsToColors = painter;
 }
 //-----------------------------------------------------------------------------
-int device_binding(int mpi_rank)
-{
-  int local_rank = mpi_rank;
-  int dev_count, use_dev_count, my_dev_id;
-  char *str;
-
-  if ((str = getenv ("MV2_COMM_WORLD_LOCAL_RANK")) != NULL)
-  {
-    local_rank = atoi (str);
-    printf ("MV2_COMM_WORLD_LOCAL_RANK %s\n", str);
-  }
-
-  if ((str = getenv ("MPISPAWN_LOCAL_NPROCS")) != NULL)
-  {
-    //num_local_procs = atoi (str);
-    printf ("MPISPAWN_LOCAL_NPROCS %s\n", str);
-  }
-
-  dev_count = vtkpiston::GetCudaDeviceCount();
-  if ((str = getenv ("NUM_GPU_DEVICES")) != NULL)
-  {
-    use_dev_count = atoi (str);
-    printf ("NUM_GPU_DEVICES %s\n", str);
-  }
-  else
-  {
-    use_dev_count = dev_count;
-  }
-
-  my_dev_id = (use_dev_count>0) ? (local_rank % use_dev_count) : 0;
-  printf ("local rank = %d dev id = %d\n", local_rank, my_dev_id);
-  return my_dev_id;
-}
-//-----------------------------------------------------------------------------
-int vtkPistonPolygonsPainter::InitCudaGL(vtkRenderWindow *rw, int rank, int &displayId)
-{
-  if (!vtkPistonPolygonsPainter::CudaGLInitted)
-  {
-    int major = THRUST_MAJOR_VERSION;
-    int minor = THRUST_MINOR_VERSION;
-    std::cout << "Thrust v" << major << "." << minor << std::endl;
-    //
-    vtkOpenGLExtensionManager *em = vtkOpenGLExtensionManager::New();
-    em->SetRenderWindow(rw);
-    em->Update();
-    if (!em->LoadSupportedExtension("GL_VERSION_1_5"))
-    {
-      std::cout << "WARNING: GL_VERSION_1_5 unsupported Can not use direct piston rendering" << endl;
-      std::cout << em->GetExtensionsString() << std::endl;
-      em->FastDelete();
-      return 0;
-    }
-    em->FastDelete();
-    if (displayId<0 || displayId>=vtkpiston::GetCudaDeviceCount()) {
-      // try another method to get the device ID
-      displayId = device_binding(rank);
-    }
-    vtkPistonPolygonsPainter::CudaGLInitted = true;
-    vtkpiston::CudaGLInit(displayId);
-  }
-  return 1;
-}
-//-----------------------------------------------------------------------------
 void vtkPistonPolygonsPainter::PrepareDirectRenderBuffers(int nPoints, int nCells)
 {
   if (nPoints==this->Internal->BufferSize && nCells==this->Internal->CellCount) {

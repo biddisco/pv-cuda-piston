@@ -26,6 +26,7 @@
 
 class  vtkImageData;
 class  vtkPolyData;
+class  vtkRenderWindow;
 struct cudaGraphicsResource; 
 
 namespace vtkpiston {
@@ -47,11 +48,25 @@ namespace vtkpiston {
   void pv_cuda_piston_EXPORT DeepCopy(vtkPistonReference *tr, vtkPistonReference *other);
   void pv_cuda_piston_EXPORT CopyFromGPU(vtkPistonDataObject *id, vtkImageData *od);
   void pv_cuda_piston_EXPORT CopyFromGPU(vtkPistonDataObject *id, vtkPolyData *od);
-}
+};
 namespace vtkpiston {
   void DepthSortPolygons(vtkPistonDataObject *id, double *cameravec, int direction);
-}
+};
 
+namespace vtkpiston {
+  extern bool pv_cuda_piston_EXPORT CudaGLInitted;
+  // Description:
+  // Manually call this before any cuda filters are created
+  // to use direct GPU rendering.
+  int pv_cuda_piston_EXPORT InitCudaGL(vtkRenderWindow *rw, int rank, int &displayId);
+
+  // Description:
+  // Return true if using cuda interop feature otherwise false.
+  inline bool pv_cuda_piston_EXPORT IsEnabledCudaGL()
+    {
+    return vtkpiston::CudaGLInitted;
+    }
+};
 
 #endif
 

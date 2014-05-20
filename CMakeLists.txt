@@ -171,6 +171,7 @@ set(CUDA_PISTON_SRCS
   vtkPistonAlgorithm.cxx
   vtkPistonDataObject.cxx
   vtkPistonPolygonsPainter.cxx
+  vtkCUDAPiston.cxx
 )
 
 set(CUDA_PISTON_CUDA_SRCS

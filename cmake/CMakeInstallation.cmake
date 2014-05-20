@@ -1,5 +1,3 @@
-message("Project name is ${PROJECT_NAME}")
-
 #-----------------------------------------------------------------------------
 # Add Target(s) to CMake Install for import into other projects
 #-----------------------------------------------------------------------------
