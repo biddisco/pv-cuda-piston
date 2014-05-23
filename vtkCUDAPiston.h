@@ -43,6 +43,7 @@ namespace vtkpiston {
        double alpha, bool &hasNormals, bool &hasColors, bool &useindexbuffers);
 
   void pv_cuda_piston_EXPORT CopyToGPU(vtkImageData *id, vtkPistonDataObject *od);
+  void pv_cuda_piston_EXPORT AllocGPU(vtkPolyData *id, vtkPistonDataObject *od);
   void pv_cuda_piston_EXPORT CopyToGPU(vtkPolyData *id, vtkPistonDataObject *od, bool useindexbuffer, char *scalarname, char *opacityname);
   void pv_cuda_piston_EXPORT DeleteData(vtkPistonReference *tr);
   void pv_cuda_piston_EXPORT DeepCopy(vtkPistonReference *tr, vtkPistonReference *other);

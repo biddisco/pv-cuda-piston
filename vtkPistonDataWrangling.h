@@ -23,16 +23,17 @@
 
 #include <thrust/version.h>
 
-#if (THRUST_MAJOR_VERSION>=1) && (THRUST_MINOR_VERSION>=6)
+#if (THRUST_MAJOR_VERSION>=1) && (THRUST_MINOR_VERSION>=7)
+ #define SPACE thrust::device_system_tag
+#elif (THRUST_MAJOR_VERSION>=1) && (THRUST_MINOR_VERSION>=6)
  #define SPACE thrust::device_space_tag
 #else
  #define SPACE thrust::detail::default_device_space_tag
 #endif
 
+// typedef thrust::tuple<unsigned char, unsigned char, unsigned char, unsigned char> uchar4;
+
 namespace vtkpiston {
-
-//  typedef thrust::tuple<unsigned char, unsigned char, unsigned char, unsigned char> uchar4;
-
 
 typedef struct
 {

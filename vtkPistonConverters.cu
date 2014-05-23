@@ -314,6 +314,38 @@ using namespace piston;
   }
 
   //-----------------------------------------------------------------------------
+  void vtkpiston::AllocGPU(vtkPolyData *id, vtkPistonDataObject *od)
+  {
+    vtkPistonReference *tr = od->GetReference();
+    tr->type = VTK_POLY_DATA;
+    if (!CheckDirty(id, tr)) {
+      return;
+    }
+    //
+    // clean previous state
+    //
+    vtkpiston::DeleteData(tr);
+
+    //
+    // allocate a new polydata device object
+    //
+    vtkpiston::vtk_polydata *newD = new vtkpiston::vtk_polydata;
+    tr->data = (void*)newD;
+    //
+    newD->points        = NULL;
+    newD->cells         = NULL;
+    newD->originalcells = NULL;
+    newD->scalars       = NULL;
+    newD->opacities     = NULL;
+    newD->normals       = NULL;
+    newD->colors        = NULL;
+    newD->userPointer   = NULL;
+    //
+    int nPoints = id->GetNumberOfPoints();
+    newD->nPoints = nPoints;  
+  }
+
+  //-----------------------------------------------------------------------------
   void vtkpiston::CopyToGPU(vtkPolyData *id, vtkPistonDataObject *od, bool useindexbuffer, char *scalarname, char *opacityname)
   {
     vtkPistonReference *tr = od->GetReference();
