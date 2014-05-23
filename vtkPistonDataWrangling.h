@@ -33,6 +33,7 @@ namespace vtkpiston {
 
 //  typedef thrust::tuple<unsigned char, unsigned char, unsigned char, unsigned char> uchar4;
 
+
 typedef struct
 {
   //GPU side representation of a vtkPolyData
@@ -49,7 +50,10 @@ typedef struct
   thrust::device_vector<float>         *normals;
   thrust::device_vector<uchar4>        *colors;
   thrust::device_vector<uchar4>         lutRGBA;
+  void *                                userPointer;
 } vtk_polydata;
+
+#ifdef __CUDACC__
 
 struct tuple2float3 :
   thrust::unary_function<thrust::tuple<float, float, float>, float3>
@@ -73,6 +77,8 @@ struct float4tofloat3 : thrust::unary_function<float4, float3>
   }
 
 };
+
+#endif
 
 } //namespace
 

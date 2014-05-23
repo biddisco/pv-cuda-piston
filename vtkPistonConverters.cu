@@ -83,6 +83,9 @@ using namespace piston;
           oldD->normals->clear();
         }
         delete oldD->normals;
+        if (oldD->userPointer) {
+          cudaFree(oldD->userPointer);
+        }
         delete oldD;
       }
       break;
@@ -352,7 +355,7 @@ using namespace piston;
     // This routine assumes that only triangles exist in the polydata
     //
     vtkCellArray *cellarray = vtkCellArray::SafeDownCast(id->GetPolys());
-    if (useindexbuffer && cellarray) {
+    if (useindexbuffer && cellarray && cellarray->GetNumberOfCells()) {
       vtkIdType ncells = cellarray->GetNumberOfCells();
       newD->nCells = ncells;
       thrust::host_vector<uint3> hA(ncells);
