@@ -135,14 +135,21 @@ include_directories(
 )
 
 #--------------------------------------------------
-# pv-zoltan : Required for depth sort
+# optional build of representation classes 
 #--------------------------------------------------
-find_package(pv_zoltan NO_MODULE REQUIRED)
-if(NOT pv_zoltan_FOUND)
-  message(FATAL_ERROR "pv-cuda-piston requires pv_zoltan")
-endif()
-include_directories(${pv_zoltan_INCLUDE_DIR})
+option(PV_CUDA_PISTON_BUILD_REPRESENTATION "Build special representations for transparent depth sorting" ON)
+if(PV_CUDA_PISTON_BUILD_REPRESENTATION)
 
+  #--------------------------------------------------
+  # pv-zoltan : Required for depth sort
+  #--------------------------------------------------
+  find_package(pv_zoltan NO_MODULE REQUIRED)
+  if(NOT pv_zoltan_FOUND)
+    message(FATAL_ERROR "pv-cuda-piston requires pv_zoltan")
+  endif()
+  include_directories(${pv_zoltan_INCLUDE_DIR})
+ 
+endif()
 #--------------------------------------------------
 # OBSOLETE : SUPPORT OLD CUDA ON WINDOWS
 # module definitions we'll need for piston flags/cuda etc
@@ -218,6 +225,16 @@ ENDIF (PARAVIEW_USE_MPI)
 set(XML_PATH   "${CMAKE_CURRENT_SOURCE_DIR}")
 set(SRC_PATH   "${CMAKE_CURRENT_SOURCE_DIR}")
 
+if(PV_CUDA_PISTON_BUILD_REPRESENTATION)
+  set(DEPTH_SORT_CODE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortRepresentation.cxx
+  )
+  set(ZOLTAN_LIBS pv-zoltan)
+  set(DEPTH_SORT_XML 
+    ${XML_PATH}/vtkDepthSortRepresentation.xml
+  )
+endif()
+
 #--------------------------------------------------
 # Define plugin sources
 #--------------------------------------------------
@@ -226,16 +243,16 @@ ADD_PARAVIEW_PLUGIN(
   ${PLUGIN_NAME}
   "1.0" 
 
-  SERVER_MANAGER_XML     
-    ${XML_PATH}/vtkDepthSortRepresentation.xml
+  SERVER_MANAGER_XML
+    ${DEPTH_SORT_XML}
 
   SERVER_MANAGER_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortRepresentation.cxx
     ${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortDefaultPainter.cxx
     ${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortPainter.cxx
     ${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortPolyData2.cxx
     ${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortPolygonsPainter.cxx
     ${CMAKE_CURRENT_SOURCE_DIR}/vtkTwoScalarsToColorsPainter.cxx
+    ${DEPTH_SORT_CODE}
 
   SERVER_SOURCES
     ${CUDA_PISTON_SRCS}
@@ -264,7 +281,7 @@ endif()
 TARGET_LINK_LIBRARIES(${PLUGIN_NAME} 
   PUBLIC
     vtksys
-    pv_zoltan
+    ${ZOLTAN_LIBS}
     ${CUDA_LIBRARIES}
 )
 
