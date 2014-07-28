@@ -197,7 +197,8 @@ endif()
 set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF) 
 
 # call the cuda wrapper
-cuda_compile(CUDA_PISTON_CUDA_C_SRCS ${CUDA_PISTON_CUDA_SRCS} ${GPGPU_BUILD_TYPE})
+#cuda_compile(CUDA_PISTON_CUDA_C_SRCS ${CUDA_PISTON_CUDA_SRCS} ${GPGPU_BUILD_TYPE})
+cuda_add_library(pv_cuda_piston_culib ${CUDA_PISTON_CUDA_SRCS} STATIC)
 
 #--------------------------------------------------
 # OBSOLETE : SUPPORT OLD CUDA ON WINDOWS
@@ -256,7 +257,7 @@ ADD_PARAVIEW_PLUGIN(
 
   SERVER_SOURCES
     ${CUDA_PISTON_SRCS}
-    ${CUDA_PISTON_CUDA_C_SRCS}
+  #  ${CUDA_PISTON_CUDA_C_SRCS}
 
   GUI_INTERFACES 
     ${ZOLTAN_IFACE}
@@ -282,6 +283,7 @@ TARGET_LINK_LIBRARIES(${PLUGIN_NAME}
   PUBLIC
     vtksys
     ${ZOLTAN_LIBS}
+    pv_cuda_piston_culib
     ${CUDA_LIBRARIES}
 )
 
