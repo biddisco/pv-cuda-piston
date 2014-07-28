@@ -23,17 +23,17 @@
 
 #include <thrust/version.h>
 
-#if (THRUST_MAJOR_VERSION>=1) && (THRUST_MINOR_VERSION>=6)
+#if (THRUST_MAJOR_VERSION>=1) && (THRUST_MINOR_VERSION>=7)
+ #define SPACE thrust::device_system_tag
+#elif (THRUST_MAJOR_VERSION>=1) && (THRUST_MINOR_VERSION>=6)
  #define SPACE thrust::device_space_tag
 #else
  #define SPACE thrust::detail::default_device_space_tag
 #endif
 
+// typedef thrust::tuple<unsigned char, unsigned char, unsigned char, unsigned char> uchar4;
+
 namespace vtkpiston {
-
-//  typedef thrust::tuple<unsigned char, unsigned char, unsigned char, unsigned char> uchar4;
-
-void DeleteData(vtkPistonReference *);
 
 typedef struct
 {
@@ -51,7 +51,10 @@ typedef struct
   thrust::device_vector<float>         *normals;
   thrust::device_vector<uchar4>        *colors;
   thrust::device_vector<uchar4>         lutRGBA;
+  void *                                userPointer;
 } vtk_polydata;
+
+#ifdef __CUDACC__
 
 struct tuple2float3 :
   thrust::unary_function<thrust::tuple<float, float, float>, float3>
@@ -75,6 +78,8 @@ struct float4tofloat3 : thrust::unary_function<float4, float3>
   }
 
 };
+
+#endif
 
 } //namespace
 

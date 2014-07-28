@@ -20,6 +20,7 @@
 #include "vtkPistonDataObject.h"
 #include "vtkPistonDataWrangling.h"
 #include "vtkPistonReference.h"
+#include "vtkCUDAPiston.h"
 
 #include "vtkgl.h"
 
@@ -28,10 +29,8 @@
 using namespace std;
 using namespace piston;
 
-namespace vtkpiston {
-
   //-----------------------------------------------------------------------------
-  void DeleteData(vtkPistonReference *tr)
+  void vtkpiston::DeleteData(vtkPistonReference *tr)
   {
     if (tr == NULL || tr->data == NULL)
     {
@@ -48,7 +47,7 @@ namespace vtkpiston {
       break;
     case VTK_POLY_DATA:
       {
-        vtk_polydata *oldD = (vtk_polydata *)tr->data;
+        vtkpiston::vtk_polydata *oldD = (vtkpiston::vtk_polydata *)tr->data;
         if (oldD->points)
         {
           oldD->points->clear();
@@ -84,6 +83,9 @@ namespace vtkpiston {
           oldD->normals->clear();
         }
         delete oldD->normals;
+        if (oldD->userPointer) {
+          cudaFree(oldD->userPointer);
+        }
         delete oldD;
       }
       break;
@@ -95,13 +97,13 @@ namespace vtkpiston {
   }
 
   //-----------------------------------------------------------------------------
-  void DeepCopy(vtkPistonReference *tr, vtkPistonReference *other)
+  void vtkpiston::DeepCopy(vtkPistonReference *tr, vtkPistonReference *other)
   {
     if (tr == NULL)
     {
       return;
     }
-    DeleteData(tr);
+    vtkpiston::DeleteData(tr);
     if (other == NULL)
     {
       return;
@@ -126,8 +128,8 @@ namespace vtkpiston {
       break;
     case VTK_POLY_DATA:
       {
-        vtk_polydata *oldD = (vtk_polydata *)other->data;
-        vtk_polydata *newD = new vtk_polydata;
+        vtkpiston::vtk_polydata *oldD = (vtkpiston::vtk_polydata *)other->data;
+        vtkpiston::vtk_polydata *newD = new vtkpiston::vtk_polydata;
         newD->nPoints = oldD->nPoints;
         newD->vertsPer = oldD->vertsPer;
         newD->points = new thrust::device_vector<float3>(oldD->points->size());
@@ -255,7 +257,7 @@ namespace vtkpiston {
   }
 
   //-----------------------------------------------------------------------------
-  int QueryNumVerts(vtkPistonDataObject *id)
+  int vtkpiston::QueryNumVerts(vtkPistonDataObject *id)
   {
     vtkPistonReference *tr = id->GetReference();
     if (tr->type != VTK_POLY_DATA || tr->data == NULL)
@@ -268,7 +270,7 @@ namespace vtkpiston {
   }
 
   //-----------------------------------------------------------------------------
-  int QueryNumCells(vtkPistonDataObject *id)
+  int vtkpiston::QueryNumCells(vtkPistonDataObject *id)
   {
     vtkPistonReference *tr = id->GetReference();
     if (tr->type != VTK_POLY_DATA || tr->data == NULL)
@@ -281,7 +283,7 @@ namespace vtkpiston {
   }
 
   //-----------------------------------------------------------------------------
-  int QueryVertsPer(vtkPistonDataObject *id)
+  int vtkpiston::QueryVertsPer(vtkPistonDataObject *id)
   {
     vtkPistonReference *tr = id->GetReference();
     if (tr->type != VTK_POLY_DATA || tr->data == NULL)
@@ -294,12 +296,12 @@ namespace vtkpiston {
   }
 
   //-----------------------------------------------------------------------------
-  void CopyToGPU(vtkImageData *id, vtkPistonDataObject *od)
+  void vtkpiston::CopyToGPU(vtkImageData *id, vtkPistonDataObject *od)
   {
     vtkPistonReference *tr = od->GetReference();
     if (CheckDirty(id, tr))
     {
-      DeleteData(tr);
+      vtkpiston::DeleteData(tr);
       vtk_image3d<SPACE> *newD =
         new vtk_image3d<SPACE>(id);
       tr->data = (void*)newD;
@@ -312,7 +314,7 @@ namespace vtkpiston {
   }
 
   //-----------------------------------------------------------------------------
-  void CopyToGPU(vtkPolyData *id, vtkPistonDataObject *od, bool useindexbuffer, char *scalarname, char *opacityname)
+  void vtkpiston::AllocGPU(vtkPolyData *id, vtkPistonDataObject *od)
   {
     vtkPistonReference *tr = od->GetReference();
     tr->type = VTK_POLY_DATA;
@@ -322,12 +324,44 @@ namespace vtkpiston {
     //
     // clean previous state
     //
-    DeleteData(tr);
+    vtkpiston::DeleteData(tr);
 
     //
     // allocate a new polydata device object
     //
-    vtk_polydata *newD = new vtk_polydata;
+    vtkpiston::vtk_polydata *newD = new vtkpiston::vtk_polydata;
+    tr->data = (void*)newD;
+    //
+    newD->points        = NULL;
+    newD->cells         = NULL;
+    newD->originalcells = NULL;
+    newD->scalars       = NULL;
+    newD->opacities     = NULL;
+    newD->normals       = NULL;
+    newD->colors        = NULL;
+    newD->userPointer   = NULL;
+    //
+    int nPoints = id->GetNumberOfPoints();
+    newD->nPoints = nPoints;  
+  }
+
+  //-----------------------------------------------------------------------------
+  void vtkpiston::CopyToGPU(vtkPolyData *id, vtkPistonDataObject *od, bool useindexbuffer, char *scalarname, char *opacityname)
+  {
+    vtkPistonReference *tr = od->GetReference();
+    tr->type = VTK_POLY_DATA;
+    if (!CheckDirty(id, tr)) {
+      return;
+    }
+    //
+    // clean previous state
+    //
+    vtkpiston::DeleteData(tr);
+
+    //
+    // allocate a new polydata device object
+    //
+    vtkpiston::vtk_polydata *newD = new vtkpiston::vtk_polydata;
     tr->data = (void*)newD;
 
     //
@@ -353,7 +387,7 @@ namespace vtkpiston {
     // This routine assumes that only triangles exist in the polydata
     //
     vtkCellArray *cellarray = vtkCellArray::SafeDownCast(id->GetPolys());
-    if (useindexbuffer && cellarray) {
+    if (useindexbuffer && cellarray && cellarray->GetNumberOfCells()) {
       vtkIdType ncells = cellarray->GetNumberOfCells();
       newD->nCells = ncells;
       thrust::host_vector<uint3> hA(ncells);
@@ -449,7 +483,7 @@ namespace vtkpiston {
   }
 
   //-----------------------------------------------------------------------------
-  void CopyFromGPU(vtkPistonDataObject *id, vtkImageData *od)
+  void vtkpiston::CopyFromGPU(vtkPistonDataObject *id, vtkImageData *od)
   {
     vtkPistonReference *tr = id->GetReference();
     if (tr->type != VTK_IMAGE_DATA || tr->data == NULL)
@@ -482,7 +516,7 @@ namespace vtkpiston {
   }
 
   //-----------------------------------------------------------------------------
-  void CopyFromGPU(vtkPistonDataObject *id, vtkPolyData *od)
+  void vtkpiston::CopyFromGPU(vtkPistonDataObject *id, vtkPolyData *od)
   {
     vtkPistonReference *tr = id->GetReference();
     if (tr->type != VTK_POLY_DATA || tr->data == NULL)
@@ -496,7 +530,7 @@ namespace vtkpiston {
       return;
     }
 
-    vtk_polydata *pD = (vtk_polydata *)tr->data;
+    vtkpiston::vtk_polydata *pD = (vtkpiston::vtk_polydata *)tr->data;
     int nPoints = pD->nPoints;
 
     //geometry
@@ -575,5 +609,3 @@ namespace vtkpiston {
       outNormals->Delete();
     }
   }
-
-} //namespace

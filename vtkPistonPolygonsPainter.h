@@ -24,6 +24,7 @@
 #include "vtkSmartPointer.h"
 #include "vtkDataSetToPiston.h"
 #include "vtkTwoScalarsToColorsPainter.h"
+#include "vtkCUDAPiston.h"
 
 class vtkRenderWindow;
 class vtkCamera;
@@ -40,18 +41,6 @@ public:
   vtkTypeMacro(vtkPistonPolygonsPainter, vtkPolygonsPainter);
 
   void SetScalarsToColors(vtkTwoScalarsToColorsPainter *painter);
-
-  // Description:
-  // Manually call this before any cuda filters are created
-  // to use direct GPU rendering.
-  static int InitCudaGL(vtkRenderWindow *rw, int rank, int &displayId);
-
-  // Description:
-  // Return true if using cuda interop feature otherwise false.
-  inline static bool IsEnabledCudaGL()
-    {
-    return CudaGLInitted;
-    }
 
   // Description:
   // Release any graphics resources that are being consumed by this mapper.

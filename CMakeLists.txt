@@ -125,20 +125,31 @@ endif()
 
 add_definitions(-DPV_CUDA_PISTON_USE_PISTON)
 
+# the dll export flag added by cmake is not passed to NVCC, so
+# we will add it manually here
+add_definitions(-Dpv_cuda_piston_EXPORTS)
+
 include_directories(
   ${PISTON_INCLUDE}
   ${CMAKE_CURRENT_SOURCE_DIR}/piston
 )
 
 #--------------------------------------------------
-# pv-zoltan : Required for depth sort
+# optional build of representation classes 
 #--------------------------------------------------
-find_package(pv_zoltan NO_MODULE REQUIRED)
-if(NOT pv_zoltan_FOUND)
-  message(FATAL_ERROR "pv-cuda-piston requires pv_zoltan")
-endif()
-include_directories(${pv_zoltan_INCLUDE_DIR})
+option(PV_CUDA_PISTON_BUILD_REPRESENTATION "Build special representations for transparent depth sorting" ON)
+if(PV_CUDA_PISTON_BUILD_REPRESENTATION)
 
+  #--------------------------------------------------
+  # pv-zoltan : Required for depth sort
+  #--------------------------------------------------
+  find_package(pv_zoltan NO_MODULE REQUIRED)
+  if(NOT pv_zoltan_FOUND)
+    message(FATAL_ERROR "pv-cuda-piston requires pv_zoltan")
+  endif()
+  include_directories(${pv_zoltan_INCLUDE_DIR})
+ 
+endif()
 #--------------------------------------------------
 # OBSOLETE : SUPPORT OLD CUDA ON WINDOWS
 # module definitions we'll need for piston flags/cuda etc
@@ -167,6 +178,7 @@ set(CUDA_PISTON_SRCS
   vtkPistonAlgorithm.cxx
   vtkPistonDataObject.cxx
   vtkPistonPolygonsPainter.cxx
+  vtkCUDAPiston.cxx
 )
 
 set(CUDA_PISTON_CUDA_SRCS
@@ -185,7 +197,8 @@ endif()
 set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF) 
 
 # call the cuda wrapper
-cuda_compile(CUDA_PISTON_CUDA_C_SRCS ${CUDA_PISTON_CUDA_SRCS} ${GPGPU_BUILD_TYPE})
+#cuda_compile(CUDA_PISTON_CUDA_C_SRCS ${CUDA_PISTON_CUDA_SRCS} ${GPGPU_BUILD_TYPE})
+cuda_add_library(pv_cuda_piston_culib ${CUDA_PISTON_CUDA_SRCS} STATIC)
 
 #--------------------------------------------------
 # OBSOLETE : SUPPORT OLD CUDA ON WINDOWS
@@ -213,6 +226,16 @@ ENDIF (PARAVIEW_USE_MPI)
 set(XML_PATH   "${CMAKE_CURRENT_SOURCE_DIR}")
 set(SRC_PATH   "${CMAKE_CURRENT_SOURCE_DIR}")
 
+if(PV_CUDA_PISTON_BUILD_REPRESENTATION)
+  set(DEPTH_SORT_CODE 
+    ${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortRepresentation.cxx
+  )
+  set(ZOLTAN_LIBS pv-zoltan)
+  set(DEPTH_SORT_XML 
+    ${XML_PATH}/vtkDepthSortRepresentation.xml
+  )
+endif()
+
 #--------------------------------------------------
 # Define plugin sources
 #--------------------------------------------------
@@ -221,20 +244,20 @@ ADD_PARAVIEW_PLUGIN(
   ${PLUGIN_NAME}
   "1.0" 
 
-  SERVER_MANAGER_XML     
-    ${XML_PATH}/vtkDepthSortRepresentation.xml
+  SERVER_MANAGER_XML
+    ${DEPTH_SORT_XML}
 
   SERVER_MANAGER_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortRepresentation.cxx
     ${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortDefaultPainter.cxx
     ${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortPainter.cxx
     ${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortPolyData2.cxx
     ${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortPolygonsPainter.cxx
     ${CMAKE_CURRENT_SOURCE_DIR}/vtkTwoScalarsToColorsPainter.cxx
+    ${DEPTH_SORT_CODE}
 
   SERVER_SOURCES
     ${CUDA_PISTON_SRCS}
-    ${CUDA_PISTON_CUDA_C_SRCS}
+  #  ${CUDA_PISTON_CUDA_C_SRCS}
 
   GUI_INTERFACES 
     ${ZOLTAN_IFACE}
@@ -259,7 +282,8 @@ endif()
 TARGET_LINK_LIBRARIES(${PLUGIN_NAME} 
   PUBLIC
     vtksys
-    pv_zoltan
+    ${ZOLTAN_LIBS}
+    pv_cuda_piston_culib
     ${CUDA_LIBRARIES}
 )
 

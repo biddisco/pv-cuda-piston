@@ -33,12 +33,11 @@
 #include "vtkPistonDataObject.h"
 #include "vtkPistonDataWrangling.h"
 #include "vtkPistonReference.h"
+#include "vtkCUDAPiston.h"
 
 #include "../vtkTwoScalarsToColorsPainter.h"
 
 #define USE_FLOAT_FOR_DEPTH_SORT
-
-namespace vtkpiston {
 
 inline __host__ __device__ float dot(float3 a, float3 b)
 { 
@@ -136,14 +135,14 @@ struct color_map
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-int GetCudaDeviceCount()
+int vtkpiston::GetCudaDeviceCount()
 {
   int num;
   cudaGetDeviceCount(&num);
   return num;
 }
 //------------------------------------------------------------------------------
-void CudaGLInit(int device)
+void vtkpiston::CudaGLInit(int device)
 {
 //  cudaDeviceProp prop;
     // Fill it with zeros
@@ -165,7 +164,7 @@ void CudaGLInit(int device)
 }
 
 //------------------------------------------------------------------------------
-void CudaRegisterBuffer(struct cudaGraphicsResource **vboResource,
+void vtkpiston::CudaRegisterBuffer(struct cudaGraphicsResource **vboResource,
                         GLuint vboBuffer)
 {
   cudaError_t res =
@@ -220,14 +219,14 @@ struct celldistance_functor
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
 //------------------------------------------------------------------------------
-void DepthSortPolygons(vtkPistonDataObject *id, double *cameravec, int direction)
+void vtkpiston::DepthSortPolygons(vtkPistonDataObject *id, double *cameravec, int direction)
 {
   vtkPistonReference *tr = id->GetReference();
   if (tr->type != VTK_POLY_DATA || tr->data == NULL) {
     // Type mismatch, don't bother trying
     return;
   }
-  vtk_polydata *pD = (vtk_polydata *)tr->data;
+  vtkpiston::vtk_polydata *pD = (vtkpiston::vtk_polydata *)tr->data;
 
   //
   // we need to compute the distance to the camera for each cell.
@@ -320,7 +319,7 @@ void DepthSortPolygons(vtkPistonDataObject *id, double *cameravec, int direction
 }
 
 //------------------------------------------------------------------------------
-void CudaTransferToGL(vtkPistonDataObject *id, unsigned long dataObjectMTimeCache,
+void vtkpiston::CudaTransferToGL(vtkPistonDataObject *id, unsigned long dataObjectMTimeCache,
                       cudaGraphicsResource **vboResources,
                       unsigned char *colorptr,
                       double scalarrange[2], double alpha,
@@ -489,4 +488,3 @@ void CudaTransferToGL(vtkPistonDataObject *id, unsigned long dataObjectMTimeCach
   return;
 }
 //------------------------------------------------------------------------------
-} //namespace

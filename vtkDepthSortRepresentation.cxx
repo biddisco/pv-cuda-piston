@@ -95,7 +95,7 @@ bool vtkDepthSortRepresentation::AddToView(vtkView* view)
 {
   vtkPVRenderView* rview = vtkPVRenderView::SafeDownCast(view);
 #ifdef PV_CUDA_PISTON_USE_PISTON
-  if (rview && !vtkPistonPolygonsPainter::IsEnabledCudaGL()) {
+  if (rview && !vtkpiston::IsEnabledCudaGL()) {
     
     // if we have no hints as to the display VAR, we'll use the rank (modulus GPU count)
     vtkMultiProcessController *controller = vtkMultiProcessController::GetGlobalController();
@@ -118,7 +118,7 @@ bool vtkDepthSortRepresentation::AddToView(vtkView* view)
 #endif
     }
     //
-    bool ok = vtkPistonPolygonsPainter::InitCudaGL(rview->GetRenderWindow(), rank, displaynum);
+    bool ok = vtkpiston::InitCudaGL(rview->GetRenderWindow(), rank, displaynum);
     // 
     vtksys::SystemInformation sysInfo;
     std::string hostname = sysInfo.GetHostname();
@@ -169,7 +169,7 @@ int vtkDepthSortRepresentation::GetEnableOpacity()
 void vtkDepthSortRepresentation::SetEnablePiston(int mode)
 {
 #ifdef PV_CUDA_PISTON_USE_PISTON
-  if (!vtkPistonPolygonsPainter::IsEnabledCudaGL()) {
+  if (!vtkpiston::IsEnabledCudaGL()) {
     mode = 0;
   }
   this->DepthSortDefaultPainter->SetEnablePiston(mode);
