@@ -230,7 +230,7 @@ if(PV_CUDA_PISTON_BUILD_REPRESENTATION)
   set(DEPTH_SORT_CODE 
     ${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortRepresentation.cxx
   )
-  set(ZOLTAN_LIBS pv-zoltan)
+  set(ZOLTAN_LIBS pv_zoltan)
   set(DEPTH_SORT_XML 
     ${XML_PATH}/vtkDepthSortRepresentation.xml
   )
