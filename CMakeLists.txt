@@ -68,7 +68,8 @@ ENDIF (ParaView_SOURCE_DIR)
 # Mac cuda  requires -stdlib=libstdc++ 
 # Therefore, use boost::tuple and compile paraview with -stdlib=libstdc++ 
 # --------------------------------------------------------------
-if (APPLE AND CMAKE_CXX_COMPILER MATCHES ".*clang")
+if (APPLE) 
+# AND CMAKE_CXX_COMPILER MATCHES ".*clang")
   set(BOOST_TUPLE_DEFAULT ON)
 else()
   set(BOOST_TUPLE_DEFAULT OFF)
