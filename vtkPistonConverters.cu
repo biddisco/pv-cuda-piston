@@ -340,6 +340,8 @@ using namespace piston;
     newD->normals       = NULL;
     newD->colors        = NULL;
     newD->userPointer   = NULL;
+    newD->vertsPer      = 0;
+    newD->nCells        = 0;
     //
     int nPoints = id->GetNumberOfPoints();
     newD->nPoints = nPoints;  
