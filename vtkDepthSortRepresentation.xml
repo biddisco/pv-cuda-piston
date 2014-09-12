@@ -46,7 +46,7 @@
     <RepresentationProxy class="vtkDepthSortRepresentation"
                          name="DepthSortRepresentation"
                          processes="client|renderserver|dataserver"
-                         base_proxygroup="representations"
+                         base_proxygroup="internal_representations"
                          base_proxyname="SurfaceRepresentationBase" >
       <Documentation>
         Representation which uses a depth sort filter.
