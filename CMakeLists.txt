@@ -197,6 +197,10 @@ set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
 
 # call the cuda wrapper
 cuda_add_library(pv_cuda_piston_culib ${CUDA_PISTON_CUDA_SRCS} STATIC)
+if (APPLE) 
+  message("Adding Apple flags")
+  target_link_libraries(pv_cuda_piston_culib /usr/lib/libstdc++.dylib)
+endif()
 
 #--------------------------------------------------
 # OBSOLETE : SUPPORT OLD CUDA ON WINDOWS
