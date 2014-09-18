@@ -182,23 +182,21 @@ set(CUDA_PISTON_SRCS
   vtkCUDAPiston.cxx
 )
 
+#--------------------------------------------------
+# Define CUDA compiled source files
+#--------------------------------------------------
 set(CUDA_PISTON_CUDA_SRCS
   vtkPistonConverters.cu
   vtkPistonMapper.cu
 )
 
 #--------------------------------------------------
-# Define CUDA compiled source files
+# Create a single library containing all the cuda compiled code
 #--------------------------------------------------
-if(BUILD_SHARED_LIBS)
-  set(GPGPU_BUILD_TYPE SHARED)
-endif()
-
 # set this, otherwise C_SOURCES is empty in Visual Studio  
 set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF) 
 
 # call the cuda wrapper
-#cuda_compile(CUDA_PISTON_CUDA_C_SRCS ${CUDA_PISTON_CUDA_SRCS} ${GPGPU_BUILD_TYPE})
 cuda_add_library(pv_cuda_piston_culib ${CUDA_PISTON_CUDA_SRCS} STATIC)
 
 #--------------------------------------------------
