@@ -22,21 +22,17 @@ endforeach()
 #-----------------------------------------------------------------------------
 # Basic naming/config stuff here
 #-----------------------------------------------------------------------------
-set(pv_cuda_piston_VERS_MAJOR   0)
-set(pv_cuda_piston_VERS_MINOR   9)
-set(pv_cuda_piston_VERS_RELEASE 0)
 
-set (pv_cuda_piston_PACKAGE                "pv_cuda_piston")
-set (pv_cuda_piston_PACKAGE_NAME           "pv_cuda_piston")
-set (pv_cuda_piston_PACKAGE_VERSION        "${pv_cuda_piston_VERS_MAJOR}.${pv_cuda_piston_VERS_MINOR}.${pv_cuda_piston_VERS_RELEASE}")
-set (pv_cuda_piston_PACKAGE_VERSION_MAJOR  "${pv_cuda_piston_VERS_MAJOR}.${pv_cuda_piston_VERS_MINOR}")
-set (pv_cuda_piston_PACKAGE_VERSION_MINOR  "${pv_cuda_piston_VERS_RELEASE}")
-set (pv_cuda_piston_PACKAGE_VERSION_STRING "${pv_cuda_piston_PACKAGE_VERSION}")
-set (pv_cuda_piston_PACKAGE_SOVERSION      "${pv_cuda_piston_SOVERS_MAJOR}.${pv_cuda_piston_SOVERS_RELEASE}.${pv_cuda_piston_SOVERS_MINOR}")
-set (pv_cuda_piston_PACKAGE_STRING         "${pv_cuda_piston_PACKAGE_NAME} ${pv_cuda_piston_PACKAGE_VERSION_STRING}")
-set (pv_cuda_piston_PACKAGE_TARNAME        "${pv_cuda_piston_PACKAGE}")
-set (pv_cuda_piston_PACKAGE_URL            "http://www.cscs.ch")
-set (pv_cuda_piston_PACKAGE_BUGREPORT      "help@cscs.ch")
+# the name that find_package() will use for this project
+set (PV_CUDA_PISTON_PACKAGE                "pv_cuda_piston")
+
+# version info
+set (PV_CUDA_PISTON_VERSION_MAJOR           0)
+set (PV_CUDA_PISTON_VERSION_MINOR           9)
+set (PV_CUDA_PISTON_VERSION_RELEASE         0)
+set (PV_CUDA_PISTON_PACKAGE_STRING         "${PV_CUDA_PISTON_VERSION_MAJOR}.${PV_CUDA_PISTON_VERSION_MINOR}.${PV_CUDA_PISTON_VERSION_RELEASE}")
+set (PV_CUDA_PISTON_PACKAGE_SOVERSION      "${PV_CUDA_PISTON_VERSION_MAJOR}.${PV_CUDA_PISTON_VERSION_MINOR}.${PV_CUDA_PISTON_VERSION_RELEASE}")
+set (PV_CUDA_PISTON_PACKAGE_TARNAME        "${PV_CUDA_PISTON_PACKAGE}")
 
 #--------------------------------------------------
 # Location of cmake files
@@ -97,6 +93,10 @@ include_directories(
   "${PROJECT_SOURCE_DIR}"
   "${PROJECT_BINARY_DIR}"
 )
+set(PV_CUDA_PISTON_INCLUDES_BUILD_TIME
+  "${PROJECT_SOURCE_DIR}"
+  "${PROJECT_BINARY_DIR}"
+)
 
 #--------------------------------------------------
 # Find CUDA and Thrust
@@ -127,7 +127,7 @@ add_definitions(-DPV_CUDA_PISTON_USE_PISTON)
 
 # the dll export flag added by cmake is not passed to NVCC, so
 # we will add it manually here
-add_definitions(-Dpv_cuda_piston_EXPORTS)
+add_definitions(-DPV_CUDA_PISTON_EXPORTS)
 
 include_directories(
   ${PISTON_INCLUDE}
@@ -270,7 +270,7 @@ ADD_PARAVIEW_PLUGIN(
     ${ZOLTAN_UI_SOURCES}
 
   GUI_RESOURCE_FILES
-#    ${XML_PATH}/pv_cuda_piston_Filters.xml
+#    ${XML_PATH}/PV_CUDA_PISTON_Filters.xml
 )
 
 if(CMAKE_COMPILER_IS_GNUCXX AND NOT PV_CUDA_PISTON_USE_BOOST_TUPLE)
@@ -307,6 +307,12 @@ set (${PROJECT_NAME}_INCLUDES_BUILD_TIME
   "${CUDATHRUST_INCLUDE_DIRS}"
   "${PISTON_INCLUDE}"
 )
+
+set (PV_CUDA_PISTON_LIBRARIES_TO_EXPORT 
+  pv_cuda_piston
+  pv_cuda_piston_culib
+)
+   
 include(CMakeInstallation)
 
 #--------------------------------------------------
