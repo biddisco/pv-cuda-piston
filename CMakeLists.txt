@@ -202,6 +202,7 @@ if (APPLE)
   message("Adding Apple flags")
   target_link_libraries(pv_cuda_piston_culib /usr/lib/libstdc++.dylib)
 endif()
+target_link_libraries(pv_cuda_piston_culib ${CUDA_CUDA_LIBRARY} ${CUDA_CUDART_LIBRARY})
 
 #--------------------------------------------------
 # OBSOLETE : SUPPORT OLD CUDA ON WINDOWS
