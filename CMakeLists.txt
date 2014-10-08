@@ -104,7 +104,8 @@ set(PV_CUDA_PISTON_INCLUDES_BUILD_TIME
 find_package(CUDA REQUIRED)
 find_package(CUDAThrust REQUIRED)
 
-if (WIN32 AND ${CUDA_VERSION} VERSION_LESS "5.5")
+#if (WIN32 AND ${CUDA_VERSION} VERSION_LESS "5.5")
+if (WIN32)
   set(NEED_PATH_HACK_FOR_VISUAL_STUDIO 1)
   message("set(NEED_PATH_HACK_FOR_VISUAL_STUDIO 1)")
 endif()
@@ -156,19 +157,19 @@ endif()
 #--------------------------------------------------
 #include(vtkModuleMacros)
 #
-#if(MSVC AND NEED_PATH_HACK_FOR_VISUAL_STUDIO)
+if(NEED_PATH_HACK_FOR_VISUAL_STUDIO)
 #  # generate the list of dependencies based on our module definition file
 #  vtk_module_impl()
 #
 #  # remove a bunch of cruft that VTK adds in here about modules autoinit
 #  # first get the old setting and store it
 #  get_directory_property(TEMP_include_directories include_directories)
-#  get_directory_property(TEMP_COMPILE_DEFINITIONS COMPILE_DEFINITIONS)
+  get_directory_property(TEMP_COMPILE_DEFINITIONS COMPILE_DEFINITIONS)
 #  # clear compile defs 
-#  set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "")
+  set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "pv_cuda_piston_EXPORTS")
 #  # shorten the include dirs so nvcc doesn't crumble under the entire VTK/ParaView/Qt path
 #  set_directory_properties(PROPERTIES include_directories "${${vtk-module}_DEPENDS_INCLUDE_DIRS};${PISTON_INCLUDE}")
-#endif(MSVC AND NEED_PATH_HACK_FOR_VISUAL_STUDIO)
+endif(NEED_PATH_HACK_FOR_VISUAL_STUDIO)
 
 #--------------------------------------------------
 # Define sources using PISTON 
@@ -206,11 +207,11 @@ endif()
 # OBSOLETE : SUPPORT OLD CUDA ON WINDOWS
 # put the include dirs back to what they were
 #--------------------------------------------------
-#if(MSVC AND NEED_PATH_HACK_FOR_VISUAL_STUDIO)
+if(NEED_PATH_HACK_FOR_VISUAL_STUDIO)
 #  # put the include dirs back to what they were
 #  set_directory_properties(PROPERTIES include_directories "${TEMP_include_directories}")
-#  set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${TEMP_COMPILE_DEFINITIONS}")
-#endif(MSVC AND NEED_PATH_HACK_FOR_VISUAL_STUDIO)
+  set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${TEMP_COMPILE_DEFINITIONS}")
+endif(NEED_PATH_HACK_FOR_VISUAL_STUDIO)
 
 #------------------------------------------------------
 # MPI support
