@@ -290,6 +290,9 @@ TARGET_LINK_LIBRARIES(${PLUGIN_NAME}
     pv_cuda_piston_culib
     ${CUDA_LIBRARIES}
 )
+if(APPLE)
+  set_target_properties(pv_cuda_piston PROPERTIES LINK_FLAGS "-F/Library/Frameworks -framework CUDA")
+endif()
 
 #--------------------------------------------------------
 # Create the module import/export configuration header.
@@ -314,8 +317,11 @@ set (PV_CUDA_PISTON_LIBRARIES_TO_EXPORT
   pv_cuda_piston
   pv_cuda_piston_culib
 )
+
    
 include(CMakeInstallation)
+
+return()
 
 #--------------------------------------------------
 # Install

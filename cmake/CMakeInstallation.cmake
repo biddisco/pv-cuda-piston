@@ -5,6 +5,7 @@ string( TOUPPER "${PROJECT_NAME}" PROJECT_UPPER_NAME )
 # Add Target(s) to CMake Install for import into other projects
 #-----------------------------------------------------------------------------
 if (NOT (${PROJECT_NAME}_IS_SUBPROJECT OR ${PROJECT_NAME}_EXTERNALLY_CONFIGURED))
+message("Her 22222")
   install (
       EXPORT ${${PROJECT_NAME}_EXPORTED_TARGETS}
       DESTINATION ${${PROJECT_NAME}_INSTALL_CMAKE_DIR}/${${PROJECT_NAME}_PACKAGE}
@@ -16,12 +17,12 @@ endif ()
 #-----------------------------------------------------------------------------
 # Export all exported targets to the build tree for use by parent project
 #-----------------------------------------------------------------------------
-#if (NOT (${PROJECT_NAME}_IS_SUBPROJECT OR ${PROJECT_NAME}_EXTERNALLY_CONFIGURED))
+if (NOT (${PROJECT_NAME}_IS_SUBPROJECT OR ${PROJECT_NAME}_EXTERNALLY_CONFIGURED))
   EXPORT (
       TARGETS ${${PROJECT_NAME}_LIBRARIES_TO_EXPORT} ${${PROJECT_NAME}_LIB_DEPENDENCIES}
       FILE ${PROJECT_BINARY_DIR}/${PROJECT_NAME}-targets.cmake
   )
-#endif ()
+endif ()
 
 #-----------------------------------------------------------------------------
 # The generated config file will use these vars for substitution
