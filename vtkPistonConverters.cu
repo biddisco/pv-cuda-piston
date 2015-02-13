@@ -25,6 +25,7 @@
 #include "vtkgl.h"
 
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 using namespace piston;
