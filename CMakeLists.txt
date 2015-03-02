@@ -262,7 +262,7 @@ ADD_PARAVIEW_PLUGIN(
 
   SERVER_SOURCES
     ${CUDA_PISTON_SRCS}
-  #  ${CUDA_PISTON_CUDA_C_SRCS}
+    ${CUDA_PISTON_CUDA_SRCS}
 
   GUI_INTERFACES 
     ${ZOLTAN_IFACE}
@@ -281,6 +281,7 @@ if(CMAKE_COMPILER_IS_GNUCXX AND NOT PV_CUDA_PISTON_USE_BOOST_TUPLE)
   set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortPolyData2.cxx PROPERTIES COMPILE_FLAGS "-std=c++0x")
 endif()
 
+link_directories(${PROJECT_BINARY_DIR}/CMakeFiles/pv_cuda_piston_culib.dir/Debug)
 #--------------------------------------------------
 # setup plugin linking
 #--------------------------------------------------
@@ -288,8 +289,10 @@ TARGET_LINK_LIBRARIES(${PLUGIN_NAME}
   PUBLIC
     vtksys
     ${ZOLTAN_LIBS}
-    pv_cuda_piston_culib
-    ${CUDA_LIBRARIES}
+#    pv_cuda_piston_culib
+${PROJECT_BINARY_DIR}/CMakeFiles/pv_cuda_piston_culib.dir/Debug/pv_cuda_piston_culib_generated_vtkPistonConverters.cu.o
+${PROJECT_BINARY_DIR}/CMakeFiles/pv_cuda_piston_culib.dir/Debug/pv_cuda_piston_culib_generated_vtkPistonMapper.cu.o
+${CUDA_LIBRARIES}
 )
 if(APPLE)
   set_target_properties(pv_cuda_piston PROPERTIES LINK_FLAGS "-F/Library/Frameworks -framework CUDA")
