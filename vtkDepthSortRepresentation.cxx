@@ -278,20 +278,22 @@ int vtkDepthSortRepresentation::ProcessViewRequest(
     vtkPVRenderView::MarkAsRedistributable(inInfo, this, false);
 
     if (this->GetNumberOfInputConnections(0) == 1 && this->UseDataPartitions) {
-      vtkObject *translator = inInfo->Get(vtkBoundsExtentTranslator::META_DATA());
-      this->BoundsTranslator = vtkBoundsExtentTranslator::SafeDownCast(translator);
-/*
-      vtkAlgorithmOutput* connection = this->GetInputConnection(0, 0);
-      vtkAlgorithm* inputAlgo = connection->GetProducer();
-      vtkStreamingDemandDrivenPipeline* sddp = vtkStreamingDemandDrivenPipeline::SafeDownCast(inputAlgo->GetExecutive());
-      vtkExtentTranslator* translator = sddp->GetExtentTranslator(connection->GetIndex());
-      //sddp->GetWholeExtent(sddp->GetOutputInformation(connection->GetIndex()), whole_extent);
 
       //
       // Check the input to see if it has a bounds translator already initialized
-      // with partition info 
+      // with partition info
       //
-*/
+      vtkAlgorithmOutput         *connection = this->GetInputConnection(0, 0);
+      vtkAlgorithm                *inputAlgo = connection->GetProducer();
+      vtkStreamingDemandDrivenPipeline* sddp = vtkStreamingDemandDrivenPipeline::SafeDownCast(inputAlgo->GetExecutive());
+      vtkInformation             *inDataInfo = sddp->GetInputInformation(0,0);
+      if (inDataInfo->Has(vtkBoundsExtentTranslator::META_DATA()))
+      {
+        vtkExtentTranslator *translator = vtkExtentTranslator::SafeDownCast(
+          inDataInfo->Get(vtkBoundsExtentTranslator::META_DATA()));
+        this->BoundsTranslator = vtkBoundsExtentTranslator::SafeDownCast(translator);
+      }
+
       // if the extent translator has not been initialized well - don't use it
       if (this->BoundsTranslator && this->BoundsTranslator->GetNumberOfPieces()==0) {
         this->BoundsTranslator = NULL;
@@ -342,8 +344,8 @@ int vtkDepthSortRepresentation::ProcessViewRequest(
           (this->GlobalDataBounds[5] - this->GlobalDataBounds[4]) / (whole_extent[5] - whole_extent[4] + 1)
         };
 
-//        vtkPVRenderView::SetOrderedCompositingInformation(inInfo, this,
-//          translator, whole_extent, origin, spacing, this->BoundsTranslator->GetKdTree());
+        vtkPVRenderView::SetOrderedCompositingInformation(inInfo, this,
+          this->BoundsTranslator, whole_extent, origin, spacing, this->BoundsTranslator->GetKdTree());
       }
     }
     else if (!this->UseDataPartitions) {
