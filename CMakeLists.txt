@@ -289,10 +289,8 @@ TARGET_LINK_LIBRARIES(${PLUGIN_NAME}
   PUBLIC
     vtksys
     ${ZOLTAN_LIBS}
-#    pv_cuda_piston_culib
-${PROJECT_BINARY_DIR}/CMakeFiles/pv_cuda_piston_culib.dir/Debug/pv_cuda_piston_culib_generated_vtkPistonConverters.cu.o
-${PROJECT_BINARY_DIR}/CMakeFiles/pv_cuda_piston_culib.dir/Debug/pv_cuda_piston_culib_generated_vtkPistonMapper.cu.o
-${CUDA_LIBRARIES}
+    pv_cuda_piston_culib
+    ${CUDA_LIBRARIES}
 )
 if(APPLE)
   set_target_properties(pv_cuda_piston PROPERTIES LINK_FLAGS "-F/Library/Frameworks -framework CUDA")
