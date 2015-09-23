@@ -177,7 +177,6 @@ endif(NEED_PATH_HACK_FOR_VISUAL_STUDIO)
 set(CUDA_PISTON_SRCS
   vtkDataSetToPiston.cxx
   vtkPistonAlgorithm.cxx
-  vtkPistonDataObject.cxx
   vtkPistonPolygonsPainter.cxx
   vtkCUDAPiston.cxx
 )
@@ -186,6 +185,7 @@ set(CUDA_PISTON_SRCS
 # Define CUDA compiled source files
 #--------------------------------------------------
 set(CUDA_PISTON_CUDA_SRCS
+  vtkPistonDataObject.cxx
   vtkPistonConverters.cu
   vtkPistonMapper.cu
 )
@@ -196,24 +196,28 @@ set(CUDA_PISTON_CUDA_SRCS
 # set this, otherwise C_SOURCES is empty in Visual Studio  
 set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF) 
 
+set(CUDA_SEPARABLE_COMPILATION ON)
+
 # call the cuda wrapper
-cuda_add_library(pv_cuda_piston_culib ${CUDA_PISTON_CUDA_SRCS} STATIC)
-if (APPLE) 
-  message("Adding Apple flags")
-  target_link_libraries(pv_cuda_piston_culib /usr/lib/libstdc++.dylib)
-  target_link_libraries(pv_cuda_piston_culib ${CUDA_CUDA_LIBRARY})
-endif()
-target_link_libraries(pv_cuda_piston_culib ${CUDA_CUDART_LIBRARY})
+cuda_add_library(pv_cuda_piston_culib SHARED ${CUDA_PISTON_CUDA_SRCS} )
+
+  #if (APPLE)
+  #  message("Adding Apple flags")
+  #  target_link_libraries(pv_cuda_piston_culib /usr/lib/libstdc++.dylib)
+  #  target_link_libraries(pv_cuda_piston_culib ${CUDA_CUDA_LIBRARY})
+  #endif()
+
+target_link_libraries(pv_cuda_piston_culib ${CUDA_CUDART_LIBRARY} vtkCommonDataModel)
 
 #--------------------------------------------------
 # OBSOLETE : SUPPORT OLD CUDA ON WINDOWS
 # put the include dirs back to what they were
 #--------------------------------------------------
-if(NEED_PATH_HACK_FOR_VISUAL_STUDIO)
-#  # put the include dirs back to what they were
-#  set_directory_properties(PROPERTIES include_directories "${TEMP_include_directories}")
-  set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${TEMP_COMPILE_DEFINITIONS}")
-endif(NEED_PATH_HACK_FOR_VISUAL_STUDIO)
+  #if(NEED_PATH_HACK_FOR_VISUAL_STUDIO)
+  #  # put the include dirs back to what they were
+  #  set_directory_properties(PROPERTIES include_directories "${TEMP_include_directories}")
+  #  set_directory_properties(PROPERTIES COMPILE_DEFINITIONS "${TEMP_COMPILE_DEFINITIONS}")
+  #endif(NEED_PATH_HACK_FOR_VISUAL_STUDIO)
 
 #------------------------------------------------------
 # MPI support
@@ -262,7 +266,6 @@ ADD_PARAVIEW_PLUGIN(
 
   SERVER_SOURCES
     ${CUDA_PISTON_SRCS}
-    ${CUDA_PISTON_CUDA_SRCS}
 
   GUI_INTERFACES 
     ${ZOLTAN_IFACE}
@@ -281,7 +284,7 @@ if(CMAKE_COMPILER_IS_GNUCXX AND NOT PV_CUDA_PISTON_USE_BOOST_TUPLE)
   set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/vtkDepthSortPolyData2.cxx PROPERTIES COMPILE_FLAGS "-std=c++0x")
 endif()
 
-link_directories(${PROJECT_BINARY_DIR}/CMakeFiles/pv_cuda_piston_culib.dir/Debug)
+#link_directories(${PROJECT_BINARY_DIR}/CMakeFiles/pv_cuda_piston_culib.dir/Debug)
 #--------------------------------------------------
 # setup plugin linking
 #--------------------------------------------------
